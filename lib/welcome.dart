@@ -1,6 +1,7 @@
 import 'dart:ui';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:minichat/chats.dart';
 import 'package:minichat/register.dart';
 
 class Welcome extends StatefulWidget {
@@ -11,6 +12,20 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
+
+  final user = FirebaseAuth.instance.currentUser;
+
+  void welcome() {
+    if(user != null) {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => Chats()));
+    }
+    else {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => Register()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,11 +54,7 @@ class _WelcomeState extends State<Welcome> {
               ClipRect(
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-                  child: ElevatedButton(onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => Register()
-                    ));
-                  },
+                  child: ElevatedButton(onPressed:welcome,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         foregroundColor: Colors.white,

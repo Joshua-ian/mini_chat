@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:minichat/chats.dart';
 import 'package:minichat/register.dart';
 
@@ -12,24 +13,60 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
 
+  bool onSelected = true;
+
+  void onTap() {
+    if(onSelected == true) {
+      onSelected = false;
+    } else {
+      onSelected = true;
+    }
+    setState(() {
+
+    });
+  }
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   Future<void> loginUser() async {
+     String message = '';
     if(_formKey.currentState!.validate()) {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim()
-      );
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim()
+        );
 
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Chats()));
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Chats()));
+      }
+      on FirebaseAuthException catch(e) {
+        if(e.code == 'user-not-found') {
+          message = 'User does not exist';
+        } else if(e.code == 'wrong-password') {
+          message = 'Wrong password!';
+        } else if(e.code == 'invalid-email') {
+          message = 'Invalid email';
+        } else if(e.code == 'internal-error') {
+          message = 'Check your internet connection and try again';
+        }
+        else {
+          message = 'Error: ${e.message}';
+        }
+
+        Fluttertoast.showToast(
+            msg: message,
+          gravity: ToastGravity.SNACKBAR,
+          toastLength: Toast.LENGTH_LONG,
+          textColor: Colors.white,
+          fontSize: 15,
+          backgroundColor: Colors.black45,
+        );
+      }
     }
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong'))
-      );
-    }
+
   }
 
   @override
@@ -127,8 +164,12 @@ class _LoginState extends State<Login> {
                                               labelStyle: TextStyle(
                                                   color: Colors.black
                                               ),
-                                              hintText: 'Enter your Password'
+                                              hintText: 'Enter your Password',
+                                            suffixIcon: IconButton(onPressed: onTap,
+                                                icon: onSelected? Icon(Icons.visibility_outlined) : Icon(Icons.visibility_off_outlined)
+                                            )
                                           ),
+                                          obscureText: onSelected,
                                         ),
                                       ),
                                       SizedBox(height: 20),

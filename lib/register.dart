@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:minichat/login.dart';
 import 'package:minichat/profile.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -17,22 +19,60 @@ class _RegisterState extends State<Register> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
   
-  
+   bool onSelected = true;
+
+  void onTap() {
+    if(onSelected == true) {
+      onSelected = false;
+    } else if(onSelected == false) {
+      onSelected == true;
+    }
+  }
+
   Future<void> registerUser() async {
-    
+
+    String message = '';
+
+
     if( _formKey.currentState!.validate()) {
+
+      try{
+        UserCredential userCredential =
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim()
       );
+      User? user = userCredential.user;
+      final uid = user!.uid;
+
+      await FirebaseFirestore.instance.collection('USERS').doc(uid).set({
+        'email': user.email,
+        'uid': uid
+      });
+
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Profile()));
     }
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Couldn't sign in user")
-          ),
-      );
+      on FirebaseAuthException catch (e) {
+        if(e.code == 'email-already-in-use') {
+          message = 'Email already exists';
+        } else if (e.code == 'weak-password') {
+          message = 'Password is too weak';
+        } else if(e.code == 'invalid-email') {
+            message = 'Invalid email in use';
+        } else if(e.code == 'network-request-failed') {
+            message = 'Check your internet connection and try again';
+        } else {
+          message = 'Error: ${e.message}';
+        }
+        Fluttertoast.showToast(
+          toastLength: Toast.LENGTH_LONG,
+            msg: message,
+          gravity: ToastGravity.SNACKBAR,
+          backgroundColor: Colors.black45,
+          textColor: Colors.white,
+          fontSize: 15
+        );
+      }
     }
   }
 
@@ -131,8 +171,16 @@ class _RegisterState extends State<Register> {
                           labelStyle: TextStyle(
                             color: Colors.black
                           ),
-                          hintText: 'Enter your Password'
+                          hintText: 'Enter your Password',
+                        suffixIcon: IconButton(onPressed: () {
+                          setState(() {
+                            onTap();
+                          });
+                        },
+                            icon: onSelected? Icon(Icons.visibility) : Icon(Icons.visibility_off)
+                        )
                       ),
+                      obscureText: onSelected,
                     ),
                   ),
                   SizedBox(height: 20),
