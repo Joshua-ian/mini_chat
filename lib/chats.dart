@@ -31,7 +31,7 @@ class _ChatsState extends State<Chats> {
     return Scaffold(
       appBar: AppBar(
         title: Text('CHATS'),
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.blueAccent,
         actions: <Widget>[
           IconButton(onPressed: (){
             showDialog(context: context,

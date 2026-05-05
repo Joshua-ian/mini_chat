@@ -52,7 +52,8 @@ class _ChatPageState extends State<ChatPage> {
          ),
        ),
        title: Text(widget.receiverName),
-       backgroundColor: Colors.blueAccent,
+       foregroundColor: Colors.white,
+       backgroundColor: Colors.blue[900],
      ),
       body: SafeArea(
         child: Container(
@@ -101,6 +102,7 @@ class _ChatPageState extends State<ChatPage> {
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             border: Border.all(),
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Column(
@@ -126,7 +128,6 @@ class _ChatPageState extends State<ChatPage> {
                else {
                  return Text('Something went wrong');
                 }
-               return Text('something went wrong');
               }),),
           Row(
             children: [
@@ -134,8 +135,13 @@ class _ChatPageState extends State<ChatPage> {
                 controller: _messageController,
                 decoration: InputDecoration(
                   hintText: 'Send Message',
+                  hintStyle: TextStyle(color: Colors.white),
+                  filled: true,
+                  fillColor: Colors.black,
                   suffixIcon: IconButton(onPressed: sendMessage,
-                      icon: Icon(Icons.send)),
+                      icon: Icon(Icons.send,
+                        color: Colors.blueAccent,
+                      )),
                   border: OutlineInputBorder()
                 ),
               ))
