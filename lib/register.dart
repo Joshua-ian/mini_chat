@@ -25,7 +25,17 @@ class _RegisterState extends State<Register> {
     if(onSelected == true) {
       onSelected = false;
     } else if(onSelected == false) {
-      onSelected == true;
+      onSelected = true;
+    }
+  }
+
+  bool onSelectedC = true;
+
+  void onTapC() {
+    if(onSelectedC == true) {
+      onSelectedC = false;
+    } else {
+      onSelectedC = true;
     }
   }
 
@@ -209,8 +219,12 @@ class _RegisterState extends State<Register> {
                           labelStyle: TextStyle(
                             color: Colors.black
                           ),
-                          hintText: 'Enter your password again'
+                          hintText: 'Enter your password again',
+                        suffixIcon: IconButton(onPressed: onTapC,
+                            icon: onSelectedC ? Icon(Icons.visibility) : Icon(Icons.visibility_off)
+                        )
                       ),
+                      obscureText: onSelectedC,
                     ),
                   ),
                   SizedBox(
