@@ -133,6 +133,7 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               Expanded(child: TextField(
                 controller: _messageController,
+                style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   hintText: 'Send Message',
                   hintStyle: TextStyle(color: Colors.white),
@@ -142,7 +143,13 @@ class _ChatPageState extends State<ChatPage> {
                       icon: Icon(Icons.send,
                         color: Colors.blueAccent,
                       )),
-                  border: OutlineInputBorder()
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: Colors.blueAccent
+                    )
+                  )
                 ),
               ))
             ],
