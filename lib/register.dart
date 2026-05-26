@@ -34,9 +34,11 @@ class _RegisterState extends State<Register> {
   void onTapC() {
     if(onSelectedC == true) {
       onSelectedC = false;
-    } else {
+    } else if(onSelectedC == false) {
       onSelectedC = true;
     }
+    setState(() {
+    });
   }
 
   Future<void> registerUser() async {

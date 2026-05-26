@@ -29,7 +29,7 @@ class _ChatPageState extends State<ChatPage> {
   void sendMessage() async {
     final String text = _messageController.text.trim();
     if(text.isNotEmpty)  {
-      await FirebaseFirestore.instance.collection('MESSAGES').add({
+      await FirebaseFirestore.instance.collection('MESSAGES').doc(chatId).collection('Messages').add({
          'message' : text,
         'senderId' : senderUid,
         'receiverId' : widget.receiverId,
@@ -39,6 +39,17 @@ class _ChatPageState extends State<ChatPage> {
       _messageController.clear();
     }
   }
+
+  String createChatId (String uid1, String uid2) {
+    List<String> ids = [uid1, uid2];
+    ids.sort();
+    return ids.join("_");
+  }
+
+  late String chatId = createChatId(
+    senderUid,
+    widget.receiverId
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +78,7 @@ class _ChatPageState extends State<ChatPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Expanded( child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('MESSAGES').orderBy('timestamp', descending: true).snapshots(),
+              stream: FirebaseFirestore.instance.collection('MESSAGES').doc(chatId).collection("Messages").orderBy('timestamp', descending: true).snapshots(),
               builder: (context, snapshots) {
                 if(snapshots.hasError) {
                   return Center(child: Text('An Unexpected error occurred'));
@@ -132,6 +143,8 @@ class _ChatPageState extends State<ChatPage> {
           Row(
             children: [
               Expanded(child: TextField(
+                style: TextStyle(color: Colors.white),
+                cursorColor: Colors.white,
                 controller: _messageController,
                 decoration: InputDecoration(
                   hintText: 'Send Message',
@@ -142,7 +155,14 @@ class _ChatPageState extends State<ChatPage> {
                       icon: Icon(Icons.send,
                         color: Colors.blueAccent,
                       )),
-                  border: OutlineInputBorder()
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: Colors.blueAccent,
+                      width: 1
+                    )
+                  )
                 ),
               ))
             ],

@@ -17,7 +17,7 @@ class _ChatsState extends State<Chats> {
   late final uid = currentUser!.uid;
 
   late Stream<QuerySnapshot> usersStream = FirebaseFirestore.instance.collection('USERS').
-      where('uid', isNotEqualTo: uid).snapshots();
+      where('uid' != uid).snapshots();
 
 
   @override
@@ -25,6 +25,7 @@ class _ChatsState extends State<Chats> {
     // TODO: implement initState
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +116,7 @@ class _ChatsState extends State<Chats> {
                         subtitle: Text(userData['email']?? ''),
 
                         onTap: () {
+
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) => ChatPage(
                                 receiverId: userData['uid'],
